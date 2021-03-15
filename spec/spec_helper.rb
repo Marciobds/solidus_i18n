@@ -1,22 +1,18 @@
-# frozen_string_literal: true
+require 'simplecov'
+SimpleCov.start 'rails'
 
-# Configure Rails Environment
 ENV['RAILS_ENV'] ||= 'test'
 
-# Run Coverage report
-require 'solidus_dev_support/rspec/coverage'
+begin
+  require File.expand_path('../dummy/config/environment', __FILE__)
+rescue LoadError
+  puts 'Could not load dummy application. Please ensure you have run `bundle exec rake test_app`'
+  exit
+end
 
-require File.expand_path('dummy/config/environment.rb', __dir__)
-
-# Requires factories and other useful helpers defined in spree_core.
-require 'solidus_dev_support/rspec/feature_helper'
-
-# Requires supporting ruby files with custom matchers and macros, etc,
-# in spec/support/ and its subdirectories.
-Dir[File.join(File.dirname(__FILE__), 'support/**/*.rb')].each { |f| require f }
-
-# Requires factories defined in lib/solidus_i18n/factories.rb
-require 'solidus_i18n/factories'
+require 'pry'
+require 'ffaker'
+require 'rspec/rails'
 
 RSpec.configure do |config|
   config.fail_fast = false
@@ -30,4 +26,8 @@ RSpec.configure do |config|
   config.expect_with :rspec do |expectations|
     expectations.syntax = :expect
   end
+
+  config.include Devise::Test::ControllerHelpers, type: :controller
 end
+
+Dir[File.join(File.dirname(__FILE__), '/support/**/*.rb')].each { |file| require file }
